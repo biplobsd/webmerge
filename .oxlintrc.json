@@ -1,0 +1,153 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "env": {
+    "browser": true,
+    "es2022": true
+  },
+  "globals": {
+    "$state": "readonly",
+    "$derived": "readonly",
+    "$effect": "readonly",
+    "$props": "readonly",
+    "$bindable": "readonly",
+    "$inspect": "readonly",
+    "$host": "readonly",
+    "chrome": "readonly"
+  },
+  "plugins": ["typescript"],
+  "ignorePatterns": [
+    "dist/**",
+    "node_modules/**",
+    "*.min.js",
+    "vite.config.ts.timestamp-*",
+    "postcss.config.cjs",
+    "tailwind.config.cjs",
+    "svelte.config.js"
+  ],
+  "rules": {
+    "no-undef": "off",
+    "no-unused-vars": "off",
+    "no-console": "off",
+    "no-debugger": "error",
+    "no-alert": "off",
+    "eqeqeq": ["error", "always", { "null": "ignore" }],
+    "no-var": "error",
+    "prefer-const": "error",
+    "no-duplicate-imports": "error",
+    "no-self-compare": "error",
+    "no-template-curly-in-string": "warn",
+    "no-unreachable": "error",
+    "no-use-before-define": "off",
+    "array-callback-return": "error",
+    "default-case-last": "error",
+    "no-await-in-loop": "off",
+    "no-promise-executor-return": "error",
+    "no-constant-binary-expression": "error",
+    "no-constructor-return": "error",
+    "no-unmodified-loop-condition": "error",
+    "no-object-constructor": "error",
+    "prefer-template": "warn",
+    "object-shorthand": ["warn", "always"],
+    "no-useless-rename": "error",
+    "no-useless-computed-key": "error",
+    "prefer-arrow-callback": "warn",
+    "no-extra-bind": "error",
+    "no-lone-blocks": "error",
+    "no-useless-concat": "warn",
+    "no-useless-return": "warn",
+    "radix": "error",
+    "yoda": "warn",
+    "typescript/no-unused-vars": [
+      "warn",
+      {
+        "args": "after-used",
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
+    ],
+    "typescript/no-explicit-any": "warn",
+    "typescript/no-non-null-assertion": "warn",
+    "typescript/prefer-as-const": "error",
+    "typescript/no-require-imports": "error",
+    "typescript/no-namespace": "error",
+    "typescript/ban-ts-comment": [
+      "warn",
+      {
+        "ts-expect-error": "allow-with-description",
+        "ts-ignore": true,
+        "ts-nocheck": true,
+        "minimumDescriptionLength": 5
+      }
+    ],
+    "typescript/no-empty-object-type": "warn",
+    "typescript/no-wrapper-object-types": "error",
+    "typescript/no-unsafe-function-type": "error"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.svelte"],
+      "rules": {
+        "no-undef": "off",
+        "no-unused-vars": "off",
+        "typescript/no-unused-vars": "off",
+        "prefer-const": "off"
+      }
+    },
+    {
+      "files": ["src/background/**/*.ts", "src/background.ts"],
+      "env": {
+        "browser": false,
+        "worker": true
+      },
+      "globals": {
+        "chrome": "readonly",
+        "self": "readonly"
+      },
+      "rules": {
+        "no-restricted-globals": [
+          "error",
+          {
+            "name": "window",
+            "message": "Background service workers have no 'window'. Use 'self' or chrome APIs instead."
+          },
+          {
+            "name": "document",
+            "message": "Background service workers have no 'document'. Use chrome APIs instead."
+          },
+          {
+            "name": "alert",
+            "message": "Background service workers have no UI globals."
+          }
+        ],
+        "typescript/no-explicit-any": "off"
+      }
+    },
+    {
+      "files": ["src/content/**/*.ts", "src/content/**/*.svelte", "src/contentScript.ts"],
+      "env": {
+        "browser": true
+      },
+      "globals": {
+        "chrome": "readonly"
+      },
+      "rules": {
+        "no-alert": "warn",
+        "typescript/no-non-null-assertion": "off"
+      }
+    },
+    {
+      "files": ["src/lib/logger.ts", "src/lib/log*.ts"],
+      "rules": {
+        "no-console": "off",
+        "typescript/no-explicit-any": "off"
+      }
+    },
+    {
+      "files": ["src/lib/schema*.ts", "src/lib/types*.ts", "src/lib/validators*.ts"],
+      "rules": {
+        "typescript/no-explicit-any": "off"
+      }
+    }
+  ]
+}

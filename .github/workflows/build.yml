@@ -1,0 +1,43 @@
+name: Build and Package
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser_name: [chrome, firefox]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.6"
+
+      - name: Install Dependencies
+        run: bun install
+
+      - name: Build for ${{ matrix.browser_name }}
+        env:
+          VITE_BROWSER_NAME: ${{ matrix.browser_name }}
+        run: bun run build
+
+      - name: Package Build
+        id: package
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          OUTPUT_NAME="webmerge_v${VERSION}_${{ matrix.browser_name }}"
+          echo "output_name=${OUTPUT_NAME}" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.output_name }}
+          path: ./dist/**

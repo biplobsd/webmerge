@@ -1,0 +1,84 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+" # e.g. v1.0.0
+      - "v[0-9]+.[0-9]+.[0-9]+\\+[0-9]+" # e.g. v1.0.0+2
+  workflow_dispatch:
+
+jobs:
+  release-extension:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    name: Release WebMerge Extension
+
+    strategy:
+      matrix:
+        browser_name: [chrome, firefox]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.6"
+
+      - name: Install Dependencies
+        run: bun install
+
+      - name: Build for ${{ matrix.browser_name }}
+        env:
+          VITE_BROWSER_NAME: ${{ matrix.browser_name }}
+        run: bun run build
+
+      - name: Extract version info
+        id: version_info
+        run: |
+          TAG=${{ github.ref_name }}
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ $TAG == *"+"* ]]; then
+            VERSION_TAG=$(echo $TAG | cut -d'+' -f1)
+            BUILD_NUMBER=$(echo $TAG | cut -d'+' -f2)
+          else
+            VERSION_TAG=$TAG
+            BUILD_NUMBER=""
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "version_tag=$VERSION_TAG" >> $GITHUB_OUTPUT
+          echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Package and zip release
+        run: |
+          VERSION=${{ steps.version_info.outputs.version }}
+          BUILD_NUMBER=${{ steps.version_info.outputs.build_number }}
+          mkdir -p release_files
+
+          if [[ -n "$BUILD_NUMBER" ]]; then
+            OUTPUT_NAME="webmerge_v${VERSION}+${BUILD_NUMBER}_${{ matrix.browser_name }}"
+          else
+            OUTPUT_NAME="webmerge_v${VERSION}_${{ matrix.browser_name }}"
+          fi
+
+          cd dist
+          zip -r "../release_files/${OUTPUT_NAME}.zip" ./*
+          cd ..
+
+          echo "output_name=${OUTPUT_NAME}" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.output_name }}
+          path: ./dist/**
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release_files/${{ env.output_name }}.zip
