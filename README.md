@@ -1,3 +1,8 @@
+> [!CAUTION]
+> **Caution: Experimental Project**
+> 
+> This project is in an experimental stage and is intended for personal use only.
+
 # WebMerge — Multi Website Aggregator & Feed Collector
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/biplobsd/webmerge/blob/main/LICENSE)
@@ -29,6 +34,11 @@ WebMerge is a browser extension for Chrome and Firefox that aggregates and searc
 2. **Search** — Enter a query; the extension fetches all enabled sites in parallel
 3. **AI Extraction** — Each page's HTML is converted to cleaned Markdown and sent to the LLM, which extracts structured JSON matching your schema
 4. **Results** — Items are merged, sorted by publish date, and displayed in a card grid
+
+## Limitations
+
+- Cloudflare protected sites are not supported
+- Sites with heavy JavaScript rendering may not work properly
 
 ## In-App Guide
 
