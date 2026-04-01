@@ -33,6 +33,9 @@ function firefoxManifestPlugin(): Plugin {
         gecko: {
           id: geckoId,
           strict_min_version: "128.0",
+          data_collection_permissions: {
+            required: ["none"],
+          },
         },
       };
 

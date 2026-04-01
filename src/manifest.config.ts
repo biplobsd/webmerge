@@ -6,7 +6,7 @@ const isFirefox = browserName === "firefox";
 
 export default defineManifest({
   manifest_version: 3,
-  name: "WebMerge - Multi Website Aggregator & Feed Collector",
+  name: "WebMerge - Multi-Website Feed Aggregator",
   short_name: "WebMerge",
   author: {
     email: "webmerge@biplobsd.me",
